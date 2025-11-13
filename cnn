@@ -18,9 +18,7 @@ import numpy as np
 from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 
-# -------------------------
-# Config
-# -------------------------
+
 DATA_DIR = "data"         # should contain 'train' and 'val' subfolders
 IMG_SIZE = (48, 48)       # common size for emotion datasets (FER)
 BATCH_SIZE = 64
@@ -31,9 +29,7 @@ MODEL_SAVE_PATH = "emotion_cnn.h5"
 # emotion labels (common 7-class FER mapping)
 CLASS_NAMES = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 
-# -------------------------
-# Data loaders
-# -------------------------
+
 def make_datasets(data_dir=DATA_DIR, img_size=IMG_SIZE, batch_size=BATCH_SIZE):
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
         os.path.join(data_dir, "train"),
@@ -62,18 +58,13 @@ def make_datasets(data_dir=DATA_DIR, img_size=IMG_SIZE, batch_size=BATCH_SIZE):
 
     return train_ds, val_ds
 
-# -------------------------
-# Data augmentation layer (on-the-fly)
-# -------------------------
+
 data_augmentation = tf.keras.Sequential([
     layers.RandomFlip("horizontal"),
     layers.RandomRotation(0.08),
     layers.RandomZoom(0.08),
 ])
 
-# -------------------------
-# Model (simple, effective)
-# -------------------------
 def build_model(input_shape=(48,48,1), num_classes=7):
     inputs = layers.Input(shape=input_shape)
 
@@ -121,9 +112,7 @@ def build_model(input_shape=(48,48,1), num_classes=7):
     model = models.Model(inputs, outputs, name="EmotionCNN")
     return model
 
-# -------------------------
-# Train
-# -------------------------
+
 def train():
     train_ds, val_ds = make_datasets()
 
@@ -164,9 +153,8 @@ def train():
 
     return model, history
 
-# -------------------------
+
 # Plot helper
-# -------------------------
 def plot_history(history):
     acc = history.history.get("accuracy", [])
     val_acc = history.history.get("val_accuracy", [])
@@ -190,9 +178,6 @@ def plot_history(history):
 
     plt.show()
 
-# -------------------------
-# Inference helpers
-# -------------------------
 def load_trained_model(path=MODEL_SAVE_PATH):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Model file not found: {path}")
@@ -210,9 +195,9 @@ def predict_image(model, img_path, img_size=IMG_SIZE):
     label = CLASS_NAMES[class_idx]
     return label, float(prob), preds[0]
 
-# -------------------------
+
 # Optional: real-time webcam demo (requires opencv)
-# -------------------------
+
 def webcam_demo(model, img_size=IMG_SIZE):
     try:
         import cv2
@@ -257,9 +242,7 @@ def webcam_demo(model, img_size=IMG_SIZE):
     cap.release()
     cv2.destroyAllWindows()
 
-# -------------------------
-# Main
-# -------------------------
+
 if __name__ == "__main__":
     # Train model
     model, history = train()
